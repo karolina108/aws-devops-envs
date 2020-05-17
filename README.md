@@ -1,4 +1,5 @@
-# aws-devops-envs
+# AWS DevOps Environments
+
 Environments for mastering AWS DevOps Engineer skills
 
 ## Conventions
@@ -15,6 +16,10 @@ Stack names will be used as a part of resource name given by CloudFormation.
 - Resources in CloudFormation: Pascal case (PascalCase)
 - Exports: Pascal case and hyphens (`-`)
 - File names: Kebab case (kebab-case)
+- SSM parameters: Pascal case
+
+Other:
+
 - Avoid All Caps (Vpc instead of VPC etc.)
 - Avoid numbers (One instead of 1)
 - Shortcuts:
@@ -25,6 +30,7 @@ Stack names will be used as a part of resource name given by CloudFormation.
 
 All resources should inherit or have added the following tags:
 
+- Name
 - Project
 - Stage
 - Component (optional)
@@ -45,7 +51,13 @@ All resources should inherit or have added the following tags:
 
 - BusinessUnit (optional)
 
-EC2 instances must have the `Name` tag, as well tags for:
+EC2 instances must have tags for:
 
 - `DeploymentGroup`: for grouping instances in deployment groups (used later by CodeDeploy)
 - `PatchingGroup`: patching groups (used later by SSM)
+
+### Stacks
+
+- Nested stacks: should be avoided, but are acceptable for networks and for resources combined in one layer (like an application layer), not acceptable for resources that store data (databases)
+- Avoid import / exports
+- Use SSM parameters for referencing resources from other stacks
