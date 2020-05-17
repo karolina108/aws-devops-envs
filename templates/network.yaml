@@ -1,0 +1,55 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Network stack
+
+Parameters:
+  Project:
+    Type: String
+    Description: A name of a project
+    AllowedPattern: ^[A-Z][a-zA-Z0-9-]{3,15}$
+  Stage:
+    Type: String
+    Description: "Stage name. Typical values: Dev, Test, Prod etc."
+    AllowedPattern: ^[A-Z][a-zA-Z0-9-]{3,10}$
+  Component:
+    Type: String
+    Description: Name of the component (layer)
+    AllowedPattern: ^[A-Z][a-zA-Z0-9-]{3,10}$
+  CfnNotificationTopicArn:
+    Type: AWS::SSM::Parameter::Value<String>
+
+Resources:
+  Vpc:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      NotificationARNs:
+        - !Ref CfnNotificationTopicArn
+      Parameters:
+        VpcCidrBlock: 10.0.0.0/16
+        InternetAccess: 'true'
+      Tags:
+        - Key: Project
+          Value: !Ref Project
+        - Key: Stage
+          Value: !Ref Stage
+        - Key: Component
+          Value: !Ref Component
+      TemplateURL: ./network/vpc.yaml
+
+  Parameters:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      NotificationARNs:
+        - !Ref CfnNotificationTopicArn
+      Parameters:
+        Project: !Ref Project
+        Stage: !Ref Stage
+        Component: !Ref Component
+
+      Tags:
+        - Key: Project
+          Value: !Ref Project
+        - Key: Stage
+          Value: !Ref Stage
+        - Key: Component
+          Value: !Ref Component
+      TemplateURL: ./network/parameters
