@@ -1,0 +1,51 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Parameters for shared resources
+
+Parameters:
+  Project:
+    Type: String
+    Description: A name of a project
+    AllowedPattern: ^[A-Z][a-zA-Z0-9-]{3,15}$
+  Stage:
+    Type: String
+    Description: "Stage name. Typical values: Dev, Test, Prod etc."
+    AllowedPattern: ^[A-Z][a-zA-Z0-9-]{3,10}$
+  Component:
+    Type: String
+    Description: Name of the component (layer)
+    AllowedPattern: ^[A-Z][a-zA-Z0-9-]{3,10}$
+  TemplatesBucketName:
+    Type: String
+    Description: A name of a bucket for templates
+  CfnNotificationsTopicArn:
+    Type: String
+    Description: A topic for CloudFormation notifications
+
+Resources:
+  TemplatesBucketNameParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Type: String
+      Description: A name of a bucket where templates for the infrastructure are stored
+      Tier: Standard
+      Value: !Ref TemplatesBucketName
+      Tags:
+        Name: !Sub ${Project}-${Stage}-TemplatesBucketNameParameter
+      Name: !Sub /${Project}/${Stage}/${Component}/TemplatesBucketName
+
+  CfnNotificationsTopicArnParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Type: String
+      Description: ARN of a topic where notifications about CloudFormation stack events will be sent
+      Tier: Standard
+      Value: !Ref CfnNotificationsTopicArn
+      Tags:
+        Name: !Sub ${Project}-${Stage}-CfnNotificationsTopicArn
+      Name: !Sub /${Project}/${Stage}/${Component}/CfnNotificationsTopicArn
+
+Outputs:
+  TemplatesBucketNameParameterName:
+    Value: !Ref TemplatesBucketNameParameter
+  CfnNotificationsTopicArnParameterName:
+    Value: !Ref CfnNotificationsTopicArnParameter
