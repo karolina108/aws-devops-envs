@@ -21,7 +21,7 @@ Parameters:
     AllowedPattern: ^[a-zA-Z0-9-]{3,20}$
   VpcId:
     Description: ID of the VPC where the subnet belongs to
-    Type: AWS::EC2::VPC::Id
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::VPC::Id>
   CidrBlock:
     Description: CIDR block for the subnet
     Type: String
@@ -58,3 +58,5 @@ Resources:
 Outputs:
   SubnetId:
     Value: !Ref Subnet
+  SubnetIdParameterName:
+    Value: !Ref SubnetIdParameter

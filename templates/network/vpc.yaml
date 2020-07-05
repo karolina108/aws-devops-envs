@@ -21,7 +21,6 @@ Parameters:
   VpcName:
     Description: VPC name
     Type: String
-    Default: vpc
     AllowedPattern: ^[a-zA-Z0-9-]{3,20}$
   VpcCidrBlock:
     Type: String
@@ -76,5 +75,7 @@ Resources:
 Outputs:
   VpcId:
     Value: !Ref Vpc
+  VpcIdParameterName:
+    Value: !Ref VpcIdParameter
   VpcCidrBlock:
     Value: !GetAtt Vpc.CidrBlock
