@@ -2,6 +2,27 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: VPC
 
 Parameters:
+  Project:
+    Description: Project name
+    Type: String
+  Stage:
+    Description: Stage name
+    Type: String
+    AllowedPattern: ^[a-z][a-zA-Z0-9-]{3,10}$
+  Component:
+    Description: Name of the component
+    Type: String
+    AllowedPattern: ^[a-z][a-zA-Z0-9-]{3,10}$
+  Layer:
+    Description: Name of the layer
+    Type: String
+    Default: network
+    AllowedPattern: ^[a-z][a-zA-Z0-9-]{3,10}$
+  VpcName:
+    Description: VPC name
+    Type: String
+    Default: vpc
+    AllowedPattern: ^[a-zA-Z0-9-]{3,20}$
   VpcCidrBlock:
     Type: String
     Description: CIDR block for the VPC
@@ -26,7 +47,7 @@ Resources:
       EnableDnsHostnames: true
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-vpc
+          Value: !Sub ${Project}-${Component}-${Stage}-${VpcName}
 
   InternetGateway:
     Condition: CreateInternetGateway
@@ -42,6 +63,15 @@ Resources:
     Properties:
       VpcId: !Ref Vpc
       InternetGatewayId: !Ref InternetGateway
+
+  VpcIdParameter:
+    Type: "AWS::SSM::Parameter"
+    Properties:
+      Description: !Sub Vpc id for ${AWS::StackName} VPC in project ${Project} on stage ${Stage}
+      Name: !Sub /${Project}/${Component}/${Layer}/${Stage}/${VpcName}/vpc-id
+      Value: !Ref Vpc
+      Type: String
+      Tier: Standard
 
 Outputs:
   VpcId:

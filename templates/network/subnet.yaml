@@ -1,0 +1,60 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Subnet
+
+Parameters:
+  Project:
+    Description: Project name
+    Type: String
+  Stage:
+    Description: Stage name
+    Type: String
+  Component:
+    Description: Name of the component
+    Type: String
+  Layer:
+    Description: Name of the layer
+    Type: String
+    Default: network
+  SubnetName:
+    Description: Unique name for the subnet within project
+    Type: String
+    AllowedPattern: ^[a-zA-Z0-9-]{3,20}$
+  VpcId:
+    Description: ID of the VPC where the subnet belongs to
+    Type: AWS::EC2::VPC::Id
+  CidrBlock:
+    Description: CIDR block for the subnet
+    Type: String
+    AllowedPattern: (\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x
+  IsPublic:
+    Description: Whether the subnet is public or private
+    Type: String
+  AvailabilityZoneIndex:
+    Description: Index of AZ in region
+    Type: Number
+    MinValue: 0
+
+Resources:
+  Subnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select [ !Ref AvailabilityZoneIndex, !GetAZs '' ]
+      VpcId: !Ref VpcId
+      CidrBlock: !Ref CidrBlock
+      MapPublicIpOnLaunch: !Ref IsPublic
+      Tags:
+        - Key: Name
+          Value: !Sub ${Project}-${Component}-${Stage}-${SubnetName}
+  SubnetIdParameter:
+      Type: "AWS::SSM::Parameter"
+      Properties:
+        Description: !Sub Subnet id for ${AWS::StackName} subnet in project ${Project} on stage ${Stage}
+        Name: !Sub /${Project}/${Component}/${Layer}/${Stage}/${SubnetName}/subnet-id
+        Value: !Ref Subnet
+        Type: String
+        Tier: Standard
+
+Outputs:
+  SubnetId:
+    Value: !Ref Subnet
