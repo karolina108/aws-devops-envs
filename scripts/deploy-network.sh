@@ -24,7 +24,7 @@ package="aws cloudformation package \
     --region ${REGION}"
 
 deploy="aws cloudformation deploy \
-    --stack-name ${PROJECT}-${COMPONENT}-${LAYER}-${STAGE}-resources \
+    --stack-name ${PROJECT}-${COMPONENT}-${LAYER}-${STAGE} \
     --template-file ${OUTPUT} \
     --parameter-overrides Project=${PROJECT} \
         Stage=${STAGE} \
