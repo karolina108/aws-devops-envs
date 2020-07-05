@@ -5,15 +5,16 @@ Parameters:
   Project:
     Type: String
     Description: A name of a project
-    AllowedPattern: ^[A-Z][a-zA-Z0-9-]{3,15}$
+    AllowedPattern: ^[a-z][a-zA-Z0-9-]{3,15}$
   Stage:
     Type: String
-    Description: "Stage name. Typical values: Dev, Test, Prod etc."
-    AllowedPattern: ^[A-Z][a-zA-Z0-9-]{3,10}$
+    Description: "Stage name. Typical values: dev, test, prod etc."
+    AllowedPattern: ^[a-z][a-zA-Z0-9-]{3,10}$
   Component:
     Type: String
     Description: Name of the component (layer)
-    AllowedPattern: ^[A-Z][a-zA-Z0-9-]{3,10}$
+    Default: shared
+    AllowedPattern: ^[a-z][a-zA-Z0-9-]{3,10}$
   TemplatesBucketName:
     Type: String
     Description: A name of a bucket for templates
@@ -31,7 +32,7 @@ Resources:
       Value: !Ref TemplatesBucketName
       Tags:
         Name: !Sub ${Project}-${Stage}-TemplatesBucketNameParameter
-      Name: !Sub /${Project}/${Stage}/${Component}/TemplatesBucketName
+      Name: !Sub /${Project}/${Component}/${Stage}/templates-bucket-name
 
   CfnNotificationsTopicArnParameter:
     Type: AWS::SSM::Parameter
@@ -42,7 +43,7 @@ Resources:
       Value: !Ref CfnNotificationsTopicArn
       Tags:
         Name: !Sub ${Project}-${Stage}-CfnNotificationsTopicArn
-      Name: !Sub /${Project}/${Stage}/${Component}/CfnNotificationsTopicArn
+      Name: !Sub /${Project}/${Component}/${Stage}/cfn-notifications-topic-arn
 
 Outputs:
   TemplatesBucketNameParameterName:
