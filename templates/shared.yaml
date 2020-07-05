@@ -5,15 +5,16 @@ Parameters:
   Project:
     Type: String
     Description: A name of a project
-    AllowedPattern: ^[A-Z][a-zA-Z0-9-]{3,15}$
+    AllowedPattern: ^[a-z][a-zA-Z0-9-]{3,15}$
   Stage:
     Type: String
     Description: "Stage name. Typical values: Dev, Test, Prod etc."
-    AllowedPattern: ^[A-Z][a-zA-Z0-9-]{3,10}$
+    AllowedPattern: ^[a-z][a-zA-Z0-9-]{3,10}$
   Component:
     Type: String
-    Description: Name of the component (layer)
-    AllowedPattern: ^[A-Z][a-zA-Z0-9-]{3,10}$
+    Description: Name of the component
+    Default: shared
+    AllowedPattern: ^[a-z][a-zA-Z0-9-]{3,10}$
 
 Resources:
   SharedResources:

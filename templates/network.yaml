@@ -5,15 +5,20 @@ Parameters:
   Project:
     Type: String
     Description: A name of a project
-    AllowedPattern: ^[A-Z][a-zA-Z0-9-]{3,15}$
+    AllowedPattern: ^[a-z][a-zA-Z0-9-]{3,15}$
   Stage:
     Type: String
-    Description: "Stage name. Typical values: Dev, Test, Prod etc."
-    AllowedPattern: ^[A-Z][a-zA-Z0-9-]{3,10}$
+    Description: "Stage name. Typical values: dev, test, prod etc."
+    AllowedPattern: ^[a-z][a-zA-Z0-9-]{3,10}$
   Component:
     Type: String
-    Description: Name of the component (layer)
-    AllowedPattern: ^[A-Z][a-zA-Z0-9-]{3,10}$
+    Description: Name of the system component
+    AllowedPattern: ^[a-z][a-zA-Z0-9-]{3,10}$
+  Layer:
+    Type: String
+    Description: Name of the layer
+    Default: network
+    AllowedPattern: ^[a-z][a-zA-Z0-9-]{3,10}$
   CfnNotificationTopicArn:
     Type: AWS::SSM::Parameter::Value<String>
 
@@ -24,6 +29,11 @@ Resources:
       NotificationARNs:
         - !Ref CfnNotificationTopicArn
       Parameters:
+        Project: !Ref Project
+        Stage: !Ref Stage
+        Component: !Ref Component
+        Layer: !Ref Layer
+        VpcName: vpc
         VpcCidrBlock: 10.0.0.0/16
         InternetAccess: 'true'
       Tags:
@@ -33,9 +43,11 @@ Resources:
           Value: !Ref Stage
         - Key: Component
           Value: !Ref Component
+        - Key: Layer
+          Value: !Ref Layer
       TemplateURL: ./network/vpc.yaml
 
-  Parameters:
+  PublicSubnet:
     Type: AWS::CloudFormation::Stack
     Properties:
       NotificationARNs:
@@ -44,7 +56,12 @@ Resources:
         Project: !Ref Project
         Stage: !Ref Stage
         Component: !Ref Component
-
+        Layer: !Ref Layer
+        SubnetName: public-subnet
+        VpcId: !GetAtt Vpc.Outputs.VpcIdParameterName
+        CidrBlock: 10.10.0.0/24
+        AvailabilityZoneIndex: 0
+        IsPublic: 'true'
       Tags:
         - Key: Project
           Value: !Ref Project
@@ -52,4 +69,32 @@ Resources:
           Value: !Ref Stage
         - Key: Component
           Value: !Ref Component
-      TemplateURL: ./network/parameters
+        - Key: Layer
+          Value: !Ref Layer
+      TemplateURL: ./network/subnet.yaml
+
+  PrivateSubnet:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      NotificationARNs:
+        - !Ref CfnNotificationTopicArn
+      Parameters:
+        Project: !Ref Project
+        Stage: !Ref Stage
+        Component: !Ref Component
+        Layer: !Ref Layer
+        SubnetName: private-subnet
+        VpcId: !GetAtt Vpc.Outputs.VpcIdParameterName
+        CidrBlock: 10.20.0.0/24
+        AvailabilityZoneIndex: 0
+        IsPublic: 'false'
+      Tags:
+        - Key: Project
+          Value: !Ref Project
+        - Key: Stage
+          Value: !Ref Stage
+        - Key: Component
+          Value: !Ref Component
+        - Key: Layer
+          Value: !Ref Layer
+      TemplateURL: ./network/subnet.yaml
